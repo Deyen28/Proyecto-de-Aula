@@ -22,4 +22,13 @@ public class UserRepoImpl implements UserRepo {
     public void guardar(Users usuario) {
         usuarios.add(usuario);
     }
+
+    public Users logear(String email, String contrasena){
+        for (Users usuario: encontrarTodo()){
+            if (usuario.getEmail().equals(email) && usuario.getContrasena().equals(contrasena)){
+                return usuario;
+            }
+        }
+        return null;
+    }
 }

@@ -40,5 +40,4 @@ public class UsersController {
         return "listaUsuarios";
     }
 
-
 }

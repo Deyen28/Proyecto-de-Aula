@@ -8,11 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class IndexController {
 
-    @GetMapping("/login")
-    public String loginView(){
-        return "loginView";
-    }
-
     @GetMapping("/reportes")
     public String reportesView(){
         return "reportesView";
