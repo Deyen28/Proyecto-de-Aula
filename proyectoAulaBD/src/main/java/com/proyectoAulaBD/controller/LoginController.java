@@ -22,7 +22,7 @@ public class LoginController {
     }
 
     @PostMapping("/loguear")
-    public String login(@ModelAttribute User usuario, Model model, HttpSession session) {
+    public String login(@ModelAttribute("user") User usuario, Model model, HttpSession session) {
         User user = userService.obtenerPorEmail(usuario.getEmail());
         if (user != null && user.getContrasena().equals(usuario.getContrasena())) {
             session.setAttribute("userId", user.getId());
@@ -43,6 +43,8 @@ public class LoginController {
         }
     }
 
+    //User
+
     @GetMapping("/user/dashboard")
     public String userDashboard(HttpSession session) {
         if (session.getAttribute("userId") == null || session.getAttribute("userType") != User.UserTipo.NORMAL) {
@@ -51,6 +53,7 @@ public class LoginController {
         return "editUser";
     }
 
+// ADMIN
     @GetMapping("/admin/dashboard")
     public String adminDashboard(HttpSession session) {
         if (session.getAttribute("userId") == null || session.getAttribute("userType") != User.UserTipo.ADMIN) {

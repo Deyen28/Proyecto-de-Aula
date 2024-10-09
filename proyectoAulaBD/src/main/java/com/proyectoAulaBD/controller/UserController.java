@@ -2,6 +2,7 @@ package com.proyectoAulaBD.controller;
 
 import com.proyectoAulaBD.model.User;
 import com.proyectoAulaBD.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +26,11 @@ public class UserController {
         userService.guardar(usuario);
         return "redirect:/LoginView";
     }
-
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
 
 
 

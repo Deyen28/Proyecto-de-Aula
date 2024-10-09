@@ -21,6 +21,12 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
     @GetMapping("/addUser")
     public String showAdminAddUserForm(Model model, HttpSession session) {
         if (session.getAttribute("userType") != User.UserTipo.ADMIN) {
@@ -45,7 +51,7 @@ public class AdminController {
             return "redirect:/LoginView";
         }
         List<User> usuarios = userService.listarTodos();
-        model.addAttribute("usuarios", usuarios);
-        return "listaUsuarios";
+        model.addAttribute("user", usuarios);
+        return "adminView";
     }
 }

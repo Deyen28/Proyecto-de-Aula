@@ -38,12 +38,14 @@
                         <li class="nav-item mx-lg-2">
                             <a class="nav-link" href="#">Contactos</a>
                         </li>
+                    </ul>
                 </div>
             </div>
 
-            <a herf="#" class="login-button mx-lg-2">Mi Perfil</a>
+            <form action="/logout" method="post">
+                <button type="submit" class="Registro-button">Logout</button>
+            </form>
 
-            <a herf="#" class="Registro-button">logout</a>
             <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -58,30 +60,27 @@
                 <div class="card ">
                     <div class="card-body">
                         <h4 class="mb-3">Actualizar datos</h4>
-                        <form class="needs-validation" novalidate="">
+                        <form class="needs-validation" novalidate="" >
                             <div class="row g-3">
                                 <div class="col-sm-6">
                                     <label for="firstName" class="form-label">Nombres</label>
                                     <input type="text" class="form-control" id="firstName" placeholder="" value=""
-                                        required="">
+                                        required="" >
                                     <div class="invalid-feedback">
                                         Se require un nombre valido.
                                     </div>
                                 </div>
 
                                 <div class="col-sm-6">
-                                    <label for="lastName" class="form-label">Apellidos</label>
+                                    <label for="lastName" class="form-label">Username</label>
                                     <input type="text" class="form-control" id="lastName" placeholder="" value=""
-                                        required="">
-                                    <div class="invalid-feedback">
-                                        Se require un apellido valido.
-                                    </div>
+                                        required="" >
                                 </div>
 
 
                                 <div class="col-12">
-                                    <label for="ciudad" class="form-label">Ciudad</label>
-                                    <input type="ciudad" class="form-control" id="ciudad" placeholder="">
+                                    <label for="ciudad" class="form-label">Email</label>
+                                    <input type="ciudad" class="form-control" id="ciudad" placeholder="" >
 
                                 </div>
 
@@ -90,21 +89,14 @@
                                             class="text-body-secondary"></span>
                                         (Optional)</span></label>
                                     <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                        required="">
+                                        required="" >
                                     <div class="invalid-feedback">
                                         Por favor ingrese su direccion.
                                     </div>
                                 </div>
 
                                 <div class="col-12">
-                                    <label for="ciudad" class="form-label">Ciudad</label>
-                                    <input type="ciudad" class="form-control" id="ciudad" placeholder="">
-
-                                </div>
-
-
-                                <div class="col-12">
-                                    <label for="contraseña" class="form-label">Nueva contraseña</label>
+                                    <label for="contraseña" class="form-label" >Nueva contraseña</label>
                                     <input type="password" class="form-control" id="contraseña" placeholder="">
                                 </div>
                             </div>
@@ -157,7 +149,7 @@
             </div>
         </div>
     </footer>
-    <!---Fin del Footer-->
+
 
 
 </body>
