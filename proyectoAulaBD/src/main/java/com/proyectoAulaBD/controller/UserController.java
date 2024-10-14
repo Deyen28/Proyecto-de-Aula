@@ -1,20 +1,36 @@
 package com.proyectoAulaBD.controller;
 
+import com.proyectoAulaBD.model.Barrios;
+import com.proyectoAulaBD.model.Contaminante;
+import com.proyectoAulaBD.model.Reportes;
 import com.proyectoAulaBD.model.User;
+import com.proyectoAulaBD.service.BarriosService;
+import com.proyectoAulaBD.service.ContaminanteService;
+import com.proyectoAulaBD.service.ReportesService;
 import com.proyectoAulaBD.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private BarriosService barriosService;
+    @Autowired
+    private ContaminanteService contaminanteService;
+    @Autowired
+    private ReportesService reportesService;
 
     @GetMapping("/registerView")
     public String showRegisterForm(Model model) {
@@ -76,12 +92,60 @@ public class UserController {
     @GetMapping("/user/dashboard/userReportView")
     public String userReportView(Model model) {
         model.addAttribute("user", new User());
+        model.addAttribute("barrios", barriosService.listarTodosLosBarrios());
+        model.addAttribute("contaminantes", contaminanteService.listarTodosLosContaminantes());
+        model.addAttribute("reporte", new Reportes());
         return "userReportes";
     }
+
+    @PostMapping("/Reportar")
+    public String registrarReporte(@ModelAttribute("reporte") Reportes reporte, HttpSession session) {
+        User user = userService.obtenerPorId((Long) session.getAttribute("userId"));
+
+        reporte.setUser(user);
+        reporte.setContaminante(contaminanteService.obtenerPorId(reporte.getContaminante().getIdContaminante()));
+        reporte.setBarrio(barriosService.obtenerPorId(reporte.getBarrio().getIdBarrio()));
+
+        reportesService.guardar(reporte);
+        return "redirect:/user/dashboard";
+    }
+
     @GetMapping("/user/dashboard/userEditView")
-    public String userEditView(Model model) {
-        model.addAttribute("user", new User());
+    public String userEditView(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/LoginView";
+        }
+        User user = userService.obtenerPorId(userId);
+        model.addAttribute("user", user);
         return "editUser";
+    }
+
+
+    @PostMapping("/ActualizarUser")
+    public String updateUser(@ModelAttribute("user") User updatedUser,
+                             BindingResult result,
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/LoginView";
+        }
+
+        updatedUser.setId(userId);
+
+        if (result.hasErrors()) {
+            return "editUser";
+        }
+
+        try {
+            User savedUser = userService.actualizarUsuario(updatedUser);
+            redirectAttributes.addFlashAttribute("success", "Perfil actualizado exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el perfil: " + e.getMessage());
+        }
+
+        return "redirect:/user/dashboard/userEditView";
     }
 
 

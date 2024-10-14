@@ -57,48 +57,40 @@
             <div class="card ">
                 <div class="card-body">
                     <h4 class="mb-3">Actualizar datos</h4>
-                    <form class="needs-validation" novalidate="">
+                    <form class="needs-validation" novalidate="" th:action="@{/ActualizarUser}" th:object="${user}" method="post">
                         <div class="row g-3">
-
                             <div class="col-sm-5">
-                                <label for="firstName" class="form-label">Nombre Completo</label>
-                                <input type="text" class="form-control" id="firstName" placeholder="" value=""
-                                       required="">
+                                <label for="nombre" class="form-label">Nombre Completo</label>
+                                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
                                 <div class="invalid-feedback">
-                                    Se require un nombre valido.
+                                    Se requiere un nombre válido.
                                 </div>
                             </div>
 
                             <div class="col-sm-5">
-                                <label for="lastName" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="lastName" placeholder="" value=""
-                                       required="">
+                                <label for="userName" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="userName" th:field="*{userName}" required>
                                 <div class="invalid-feedback">
-                                    Se require un Username valido.
+                                    Se requiere un Username válido.
                                 </div>
                             </div>
 
                             <div class="col-sm-10">
-                                <label for="address" class="form-label">Direccion<span
-                                        class="text-body-secondary"></span>
-                                    (Optional)</span></label>
-                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                       required="">
-                                <div class="invalid-feedback">
-                                    Por favor ingrese su direccion.
-                                </div>
+                                <label for="direccion" class="form-label">Dirección <span class="text-body-secondary">(Optional)</span></label>
+                                <input type="text" class="form-control" id="direccion" th:field="*{direccion}" placeholder="1234 Main St">
                             </div>
+
                             <div class="row g-3 align-items-center">
                                 <div class="col-auto">
-                                    <label for="inputPassword6" class="col-form-label">Contraseña</label>
+                                    <label for="contrasena" class="col-form-label">Nueva Contraseña (dejar en blanco para no cambiar)</label>
                                 </div>
                                 <div class="col-auto">
-                                    <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                                    <input type="password" id="contrasena" class="form-control" th:field="*{contrasena}" aria-describedby="passwordHelpInline">
                                 </div>
                                 <div class="col-auto">
-                                      <span id="passwordHelpInline" class="form-text">
-                                        Must be 8-12 characters long.
-                                      </span>
+                                    <span id="passwordHelpInline" class="form-text">
+                                            Debe tener entre 8 y 12 caracteres.
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -106,10 +98,8 @@
                         <hr class="my-4">
 
                         <div class="d-grid gap-1 d-md-flex justify-content-md-end">
-                            <button class="btn btn-dark btn-lg " type="submit">Actualizar</button>
-                            <button class="btn btn-dark btn-lg " type="submit">Editar</button>
+                            <button class="btn btn-dark btn-lg" type="submit">Actualizar</button>
                         </div>
-
                     </form>
                 </div>
             </div>

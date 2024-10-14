@@ -2,6 +2,9 @@ package com.proyectoAulaBD.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "user")
 public class User {
@@ -22,15 +25,17 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserTipo userTipo;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reportes> reportes = new ArrayList<>();
+
     public enum UserTipo {
         NORMAL, ADMIN, PRIVILEGED
     }
 
-    public User() {
-    }
 
-    public User(Long id, String nombre, String userName, String email, String direccion, String contrasena, UserTipo userTipo) {
-        this.id = id;
+    public User() {}
+
+    public User(String nombre, String userName, String email, String direccion, String contrasena, UserTipo userTipo) {
         this.nombre = nombre;
         this.userName = userName;
         this.email = email;

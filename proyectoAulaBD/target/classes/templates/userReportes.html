@@ -13,47 +13,47 @@
 </head>
 
 
-<body class="hero-section"></body>
-<!---- inicio navbar---->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand me-auto" href="#">PRGA</a>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
-             aria-labelledby="offcanvasNavbarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<body class="hero-section">
+
+        <!---- inicio navbar---->
+        <nav class="navbar navbar-expand-lg fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand me-auto" href="#">PRGA</a>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                     aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link " aria-current="page" href="/user/dashboard">Inicio</a>
+                            </li>
+                            <li class="nav-item mx-lg-2">
+                                <a class="nav-link active " href="/user/dashboard/userReportView"> Mi Reportes</a>
+                            </li>
+                            <li class="nav-item mx-lg-2">
+                                <a class="nav-link mx-lg-2" href="/user/dashboard/userEditView">Mi Perfil</a>
+                            </li>
+                            <li class="nav-item mx-lg-2">
+                                <a class="nav-link" href="#footer">Contactos</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <form action="/logout" method="post">
+                    <button type="submit" class="Registro-button">Logout</button>
+                </form>
+                <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/user/dashboard">Inicio</a>
-                    </li>
-                    <li class="nav-item mx-lg-2">
-                        <a class="nav-link " href="/user/dashboard/userReportView"> Mi Reportes</a>
-                    </li>
-                    <li class="nav-item mx-lg-2">
-                        <a class="nav-link active mx-lg-2" href="/user/dashboard/userEditView">Mi Perfil</a>
-                    </li>
-                    <li class="nav-item mx-lg-2">
-                        <a class="nav-link" href="#">Contactos</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-
-        <form action="/logout" method="post">
-            <button type="submit" class="Registro-button">Logout</button>
-        </form>
-        <button class="navbar-toggler pe-0" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
-<!---- fin navbar---->
-
+        </nav>
+        <!---- fin navbar---->
 
 <div class="container-py-5 py-ms-6 mt-5 ">
     <div class="row justify-content-center">
@@ -61,51 +61,44 @@
             <div class="card ">
                 <div class="card-body">
                     <h4 class="mb-3">Realizar reporte</h4>
-                    <form class="needs-validation" novalidate="">
+                    <form class="needs-validation" novalidate="" th:action="@{/Reportar}" th:object="${reporte}" method="post">
                         <div class="row g-3">
-
                             <div class="col-sm-6">
-                                <select class="form-select" aria-label="Default select example">
-                                    <option selected>Tipo de contaminate</option>
-                                    <option value="1">Contaminacion auditiva</option>
-                                    <option value="2">Desechos toxicos</option>
-                                    <option value="3">Desechos inorganicos</option>
-                                    <option value="3">Otro</option>
+                                <label for="contaminante">Tipo de contaminación</label>
+                                <select class="form-select" id="contaminante" th:field="*{contaminante.idContaminante}" required>
+                                    <option value="">Seleccione un contaminante</option>
+                                    <option th:each="contaminante : ${contaminantes}"
+                                            th:value="${contaminante.idContaminante}"
+                                            th:text="${contaminante.nombreContaminante}"></option>
                                 </select>
                             </div>
 
-
                             <div class="col-sm-6">
-                                <label for="countries">Busque su Barrio</label>
-                                <select aria-label="Default select example" name="countries" id="countries">
-                                    <option value="1">El pozon</option>
-                                    <option value="2">Villa Sol</option>
-                                    <option value="3">Catellana</option>
-                                    <option value="4">Los caracoles</option>
-                                    <option value="5">Olaya</option>
+                                <label for="barrio">Busque su Barrio</label>
+                                <select class="form-select" id="barrio" th:field="*{barrio.idBarrio}" required>
+                                    <option value="">Seleccione su barrio</option>
+                                    <option th:each="barrio : ${barrios}"
+                                            th:value="${barrio.idBarrio}"
+                                            th:text="${barrio.nombreBarrio}"></option>
                                 </select>
                             </div>
-
-
-                            <div class="col-sm-6"></div>
 
                             <div class="col-sm-9">
-                                <label for="address" class="form-label">Direccion</label>
-                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                       required="">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" placeholder="1234 Main St"
+                                       th:field="*{direccion}" required>
                                 <div class="invalid-feedback">
-                                    Por favor ingrese su direccion.
+                                    Por favor ingrese su dirección.
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <label for="exampleFormControlTextarea1" class="form-label">Describa las causas
-                                        del reporte: <span class="text-body-secondary">(Opcional)</span></label>
-                                    <textarea class="form-control" id="exampleFormControlTextarea1"
-                                              rows="3"></textarea>
+                                    <label for="descripcion" class="form-label">Describa las causas del reporte: <span class="text-body-secondary">(Opcional)</span></label>
+                                    <textarea class="form-control" id="descripcion" rows="3" th:field="*{descripcion}"></textarea>
                                 </div>
                             </div>
+
                             <hr class="my-4">
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -120,7 +113,7 @@
 </div>
 
 
-<footer class="footer py-3 py-md-2 mt-4">
+<footer id="footer" class="footer py-3 py-md-2 mt-4">
     <div class="container">
         <div class="row">
             <div class="footer-col">
