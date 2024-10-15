@@ -101,6 +101,13 @@
                             <button class="btn btn-dark btn-lg" type="submit">Actualizar</button>
                         </div>
                     </form>
+                    <div th:if="${success}" class="alert alert-success">
+                        <p th:text="${success}"></p>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger">
+                        <p th:text="${error}"></p>
+                    </div>
                 </div>
             </div>
         </div>

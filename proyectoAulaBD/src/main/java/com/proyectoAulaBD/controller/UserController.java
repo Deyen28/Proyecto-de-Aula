@@ -124,7 +124,7 @@ public class UserController {
 
     @PostMapping("/ActualizarUser")
     public String updateUser(@ModelAttribute("user") User updatedUser,
-                             BindingResult result,
+
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
@@ -133,10 +133,6 @@ public class UserController {
         }
 
         updatedUser.setId(userId);
-
-        if (result.hasErrors()) {
-            return "editUser";
-        }
 
         try {
             User savedUser = userService.actualizarUsuario(updatedUser);
@@ -151,15 +147,17 @@ public class UserController {
 
     // ADMIN
     @GetMapping("/admin/dashboard")
-    public String adminDashboard(HttpSession session) {
+    public String adminDashboard(Model model,HttpSession session) {
         if (session.getAttribute("userId") == null || session.getAttribute("userType") != User.UserTipo.ADMIN) {
             return "redirect:/LoginView";
         }
+        List<User> usuarios = userService.listarTodos();
+        model.addAttribute("usuarios", usuarios);
         return "adminView";
     }
 
     @GetMapping("/privileged/dashboard")
-    public String privilegedDashboard(HttpSession session) {
+    public String privilegedDashboard(Model model,HttpSession session) {
         if (session.getAttribute("userId") == null || session.getAttribute("userType") != User.UserTipo.PRIVILEGED) {
             return "redirect:/LoginView";
         }
