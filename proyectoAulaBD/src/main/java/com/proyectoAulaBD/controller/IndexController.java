@@ -10,7 +10,7 @@ public class IndexController {
 
     @GetMapping("/reportes")
     public String reportesView(){
-        return "reportes";
+        return "reportesView";
     }
 
 }

@@ -90,11 +90,21 @@ public class UserController {
     }
 
     @GetMapping("/user/dashboard/userReportView")
-    public String userReportView(Model model) {
+    public String userReportView(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/LoginView";
+        }
+
         model.addAttribute("user", new User());
         model.addAttribute("barrios", barriosService.listarTodosLosBarrios());
         model.addAttribute("contaminantes", contaminanteService.listarTodosLosContaminantes());
         model.addAttribute("reporte", new Reportes());
+
+        // Agrega la lista de reportes del usuario
+        List<Reportes> reportes = reportesService.obtenerReportesPorUsuario(userId);
+        model.addAttribute("reportes", reportes);
+
         return "userReportes";
     }
 
