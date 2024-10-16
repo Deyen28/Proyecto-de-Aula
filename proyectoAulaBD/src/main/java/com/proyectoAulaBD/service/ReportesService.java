@@ -21,4 +21,8 @@ public class ReportesService {
     public List<Reportes> listarTodos() {
         return reportesRepository.findAll();
     }
+
+    public List<Reportes> obtenerReportesPorUsuario(Long userId) {
+        return reportesRepository.findByUserId(userId);
+    }
 }

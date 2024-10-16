@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reportes del Usuario</title>
+    <!-- Incluye tus estilos CSS aquí -->
+</head>
+<body>
+<h1>Reportes de <span th:text="${user.nombre}"></span></h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Dirección</th>
+        <th>Descripción</th>
+        <th>Contaminante</th>
+        <th>Barrio</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="reporte : ${reportes}">
+        <td th:text="${reporte.idReportes}"></td>
+        <td th:text="${reporte.direccion}"></td>
+        <td th:text="${reporte.descripcion}"></td>
+        <td th:text="${reporte.contaminante.nombreContaminante}"></td>
+        <td th:text="${reporte.barrio.nombreBarrio}"></td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/admin/dashboard}">Volver al Dashboard</a>
+</body>
+</html>

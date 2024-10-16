@@ -107,7 +107,6 @@
                         <table class="table bg-white rounded shadow-sm  table-hover">
                             <thead>
                             <tr>
-                                <th scope="col" width="50">#</th>
                                 <th scope="col">ID</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Usuario</th>
@@ -119,7 +118,6 @@
                             </thead>
                             <tbody>
                             <tr th:each="usuario, status : ${usuarios}">
-                                <td th:text="${status.count}"></td>
                                 <td th:text="${usuario.id}"></td>
                                 <td th:text="${usuario.nombre}"></td>
                                 <td th:text="${usuario.userName}"></td>
@@ -127,12 +125,17 @@
                                 <td th:text="${usuario.direccion}"></td>
                                 <td th:text="${usuario.userTipo}"></td>
                                 <td>
-                                    <!-- Aquí van los botones -->
-                                    <form action="/admin/deleteUser /${usuario.id}" method="post">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button class="btn btn-success btn-sm" type="submit"><i class="bi bi-trash-fill"></i></button>
+                                    <button class="btn btn-primary btn-sm" onclick="openEditModal(this)" th:data-user-id="${usuario.id}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <a th:href="@{/admin/userReports/{id}(id=${usuario.id})}" class="btn btn-info btn-sm">
+                                        <i class="bi bi-file-text-fill"></i>
+                                    </a>
+                                    <form th:action="@{/admin/deleteUser/{id}(id=${usuario.id})}" method="post" style="display:inline;">
+                                        <button class="btn btn-danger btn-sm" type="submit">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
                                     </form>
-                                    <button class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></button>
                                 </td>
                             </tr>
                             </tbody>
@@ -145,6 +148,90 @@
     </div>
     <!-- /#page-content-wrapper -->
 </div>
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3">
+                        <label for="editNombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="editNombre" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserName" class="form-label">Nombre de usuario:</label>
+                        <input type="text" class="form-control" id="editUserName" name="userName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email:</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDireccion" class="form-label">Dirección:</label>
+                        <input type="text" class="form-control" id="editDireccion" name="direccion">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserTipo" class="form-label">Tipo de usuario:</label>
+                        <select class="form-select" id="editUserTipo" name="userTipo">
+                            <option value="NORMAL">Normal</option>
+                            <option value="ADMIN">Admin</option>
+                            <option value="PRIVILEGED">Privileged</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="submitEditForm()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+    function openEditModal(button) {
+        const userId = button.getAttribute('data-user-id');
+        fetch(`/admin/getUser/${userId}`)
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editNombre').value = user.nombre;
+                document.getElementById('editUserName').value = user.userName;
+                document.getElementById('editEmail').value = user.email;
+                document.getElementById('editDireccion').value = user.direccion;
+                document.getElementById('editUserTipo').value = user.userTipo;
+                editModal.show();
+            });
+    }
+
+    function submitEditForm() {
+        const form = document.getElementById('editUserForm');
+        const formData = new FormData(form);
+        fetch(`/admin/updateUser/${formData.get('id')}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                editModal.hide();
+                location.reload(); // Reload the page to see the updated user info
+            } else {
+                alert('Error al actualizar el usuario: ' + result.error);
+            }
+        });
+    }
+
+</script>
 
 <!--- Footer-->
 <footer class="footer">

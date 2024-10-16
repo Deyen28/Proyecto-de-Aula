@@ -35,7 +35,6 @@ public class UserService {
         User existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + updatedUser.getId()));
 
-        // Actualiza solo los campos que necesitas
         existingUser.setNombre(updatedUser.getNombre());
         existingUser.setUserName(updatedUser.getUserName());
         existingUser.setDireccion(updatedUser.getDireccion());
@@ -44,8 +43,6 @@ public class UserService {
         if (updatedUser.getContrasena() != null && !updatedUser.getContrasena().isEmpty()) {
             existingUser.setContrasena(updatedUser.getContrasena());
         }
-
-        // Guarda y devuelve el usuario actualizado
         return userRepository.save(existingUser);
     }
 

@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -79,35 +81,50 @@ public class AdminController {
 
 
     @PostMapping("/deleteUser/{id}")
-    public String deleteUser(@PathVariable Long id, @RequestParam("_method") String method, HttpSession session) {
-        if (method.equals("DELETE")) {
-            if (session.getAttribute("userId") == null || session.getAttribute("userType") != User.UserTipo.ADMIN) {
-                return "redirect:/LoginView";
-            }
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
             userService.eliminar(id);
-            return "redirect:/admin/dashboard";
-        } else {
-            return "redirect:/";
+            redirectAttributes.addFlashAttribute("success", "Usuario eliminado exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el usuario: " + e.getMessage());
         }
+        return "redirect:/admin/dashboard";
     }
 
-
-    @GetMapping("/addUser")
-    public String showAdminAddUserForm(Model model, HttpSession session) {
-        if (session.getAttribute("userType") != User.UserTipo.ADMIN) {
-            return "redirect:/LoginView";
-        }
-        model.addAttribute("user", new User());
-        return "adminAddUser";
+    @GetMapping("/getUser/{id}")
+    @ResponseBody
+    public User getUser(@PathVariable Long id) {
+        return userService.obtenerPorId(id);
     }
 
-    @PostMapping("/addUser")
-    public String adminAddUser(@ModelAttribute("user") User usuario, HttpSession session) {
-        if (session.getAttribute("userType") != User.UserTipo.ADMIN) {
-            return "redirect:/LoginView";
+    @PostMapping("/updateUser/{id}")
+    @ResponseBody
+    public Map<String, Object> updateUser(@PathVariable Long id, @ModelAttribute User updatedUser) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            User existingUser = userService.obtenerPorId(id);
+            existingUser.setNombre(updatedUser.getNombre());
+            existingUser.setUserName(updatedUser.getUserName());
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setDireccion(updatedUser.getDireccion());
+            existingUser.setUserTipo(updatedUser.getUserTipo());
+
+            userService.actualizarUsuario(existingUser);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("error", e.getMessage());
         }
-        userService.guardar(usuario);
-        return "redirect:/admin/userList";
+        return response;
+    }
+
+    @GetMapping("/userReports/{id}")
+    public String showUserReports(@PathVariable Long id, Model model) {
+        User user = userService.obtenerPorId(id);
+        List<Reportes> reportes = reportesService.obtenerReportesPorUsuario(id);
+        model.addAttribute("user", user);
+        model.addAttribute("reportes", reportes);
+        return "adminRepoUser";
     }
 
 }
