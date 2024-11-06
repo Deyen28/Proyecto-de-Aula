@@ -24,7 +24,7 @@
                     class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
             <a href="/admin/dashboard/profile" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                     class="fas fa-project-diagram me-2"></i>Mi perfil</a>
-            <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+            <a href="/admin/dashboard/analytics" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                     class="fas fa-chart-line me-2"></i>Analytics</a>
             <a href="/admin/dashboard/reportes" class="list-group-item list-group-item-action bg-transparent second-text active"><i
                     class="fas fa-paperclip me-2"></i>Reports</a>
@@ -41,7 +41,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
             <div class="d-flex align-items-center">
                 <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
-                <h2 class="fs-2 m-0">iNFORMACION Admin</h2>
+                <h2 class="fs-2 m-0">INFORMACION Admin</h2>
             </div>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -97,10 +97,12 @@
                             <td th:text="${reporte.direccion}"></td>
                             <td th:text="${reporte.descripcion}"></td>
                             <td>
-                                <!-- Aquí van los botones -->
-                                <button class="btn btn-success btn-sm" ><i class="bi bi-trash-fill"></i></button>
-                                <button class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></button>
-                                <button class="btn btn-secondary btn-sm"><i class="bi bi-eye"></i></button>
+                                <!-- Botones de acciones -->
+                                <form th:action="@{/admin/dashboard/deleteReport/{id}(id=${reporte.idReportes})}" method="post" style="display:inline;">
+                                    <button class="btn btn-danger btn-sm" type="submit">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         </tbody>
@@ -111,6 +113,14 @@
     </div>
 </div>
 <!-- find Crud -->
+<div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 <!--- Footer-->

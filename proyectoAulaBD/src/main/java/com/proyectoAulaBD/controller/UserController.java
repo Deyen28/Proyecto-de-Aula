@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,7 +34,7 @@ public class UserController {
     private ReportesService reportesService;
 
     @GetMapping("/registerView")
-    public String showRegisterForm(Model model) {
+    public String mostararFormulario(Model model) {
         model.addAttribute("user", new User());
         return "registerView";
     }
@@ -117,7 +118,32 @@ public class UserController {
         reporte.setBarrio(barriosService.obtenerPorId(reporte.getBarrio().getIdBarrio()));
 
         reportesService.guardar(reporte);
-        return "redirect:/user/dashboard";
+        return "redirect:/user/dashboard/userReportView";
+    }
+
+    @PostMapping("/user/deleteReport/{id}")
+    public String eliminarUserReport(@PathVariable Long id,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/LoginView";
+        }
+
+        try {
+            Reportes reporte = reportesService.obtenerPorId(id);
+
+            if (reporte != null && reporte.getUser().getId().equals(userId)) {
+                reportesService.eliminar(id);
+                redirectAttributes.addFlashAttribute("success", "Reporte eliminado exitosamente");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar este reporte");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el reporte: " + e.getMessage());
+        }
+
+        return "redirect:/user/dashboard/userReportView";
     }
 
     @GetMapping("/user/dashboard/userEditView")
@@ -133,7 +159,7 @@ public class UserController {
 
 
     @PostMapping("/ActualizarUser")
-    public String updateUser(@ModelAttribute("user") User updatedUser,
+    public String actualizarUser(@ModelAttribute("user") User updatedUser,
 
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {

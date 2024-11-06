@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -61,7 +60,7 @@ public class AdminController {
     }
 
     @PostMapping("/dashboard/ActualizarUser")
-    public String adminupdateUser(@ModelAttribute("user") User updatedUser,
+    public String adminActualizarUser(@ModelAttribute("user") User updatedUser,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
@@ -81,7 +80,7 @@ public class AdminController {
 
 
     @PostMapping("/deleteUser/{id}")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             userService.eliminar(id);
             redirectAttributes.addFlashAttribute("success", "Usuario eliminado exitosamente");
@@ -93,13 +92,13 @@ public class AdminController {
 
     @GetMapping("/getUser/{id}")
     @ResponseBody
-    public User getUser(@PathVariable Long id) {
+    public User obtenerUser(@PathVariable Long id) {
         return userService.obtenerPorId(id);
     }
 
     @PostMapping("/updateUser/{id}")
     @ResponseBody
-    public Map<String, Object> updateUser(@PathVariable Long id, @ModelAttribute User updatedUser) {
+    public Map<String, Object> actualizarUser(@PathVariable Long id, @ModelAttribute User updatedUser) {
         Map<String, Object> response = new HashMap<>();
         try {
             User existingUser = userService.obtenerPorId(id);
@@ -119,12 +118,62 @@ public class AdminController {
     }
 
     @GetMapping("/userReports/{id}")
-    public String showUserReports(@PathVariable Long id, Model model) {
+    public String mostrarReporte(@PathVariable Long id, Model model) {
         User user = userService.obtenerPorId(id);
         List<Reportes> reportes = reportesService.obtenerReportesPorUsuario(id);
         model.addAttribute("user", user);
         model.addAttribute("reportes", reportes);
         return "adminRepoUser";
     }
+
+    @PostMapping("/dashboard/deleteReport/{id}")
+    public String eliminarReport(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            reportesService.eliminar(id);
+            redirectAttributes.addFlashAttribute("success", "Reporte eliminado exitosamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar el reporte: " + e.getMessage());
+        }
+        return "redirect:/admin/dashboard/reportes";
+    }
+
+    @GetMapping("/dashboard/analytics")
+    public String mostrarAnaliticas(Model model, HttpSession session) {
+        if (session.getAttribute("userId") == null ||
+                session.getAttribute("userType") != User.UserTipo.ADMIN) {
+            return "redirect:/LoginView";
+        }
+
+        Long umbral = 3L;
+        System.out.println("Iniciando análisis con umbral: " + umbral);
+
+        List<Object[]> reportesPorBarrioYContaminante =
+                reportesService.contarReportesPorBarrioYContaminante(umbral);
+
+        System.out.println("Datos obtenidos para la vista:");
+        System.out.println("Cantidad de registros: " +
+                (reportesPorBarrioYContaminante != null ?
+                        reportesPorBarrioYContaminante.size() : "null"));
+
+        model.addAttribute("reportesPorBarrioYContaminante",
+                reportesPorBarrioYContaminante);
+        model.addAttribute("umbralReportes", umbral);
+
+        List<Object[]> contaminantesFrecuentes =
+                reportesService.contaminantesMasReportados();
+
+        // Agrega logs para debug
+        System.out.println("Datos de contaminantes frecuentes:");
+        if (contaminantesFrecuentes != null) {
+            contaminantesFrecuentes.forEach(data ->
+                    System.out.println(Arrays.toString(data)));
+        }
+
+        model.addAttribute("contaminantesFrecuentes",
+                contaminantesFrecuentes);
+
+        return "adminAnalytics";
+    }
+
 
 }
