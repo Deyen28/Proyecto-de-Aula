@@ -1,6 +1,9 @@
 package com.proyectoAulaBD.model;
 
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 
 @Entity
@@ -26,14 +29,47 @@ public class Reportes {
     @JoinColumn(name = "barrio_id")
     private Barrios barrio;
 
-    public Reportes() {}
+    @Column(name = "fecha_reporte")
+    private LocalDate fechaReporte;
 
-    public Reportes(String direccion, String descripcion, User user, Contaminante contaminante, Barrios barrio) {
+    @Transient
+    private String fechaReporteFormatted;
+
+    // Getters y setters para fechaReporteFormatted
+    public String getFechaReporteFormatted() {
+        return fechaReporteFormatted;
+    }
+
+    public void setFechaReporteFormatted(String fechaReporteFormatted) {
+        this.fechaReporteFormatted = fechaReporteFormatted;
+    }
+
+    @Column(name = "evidencia")
+    private String evidencia;
+
+    @Transient
+    private MultipartFile evidenciaFile; // Campo para manejar la carga del archivo
+
+    public MultipartFile getEvidenciaFile() {
+        return evidenciaFile;
+    }
+
+    public void setEvidenciaFile(MultipartFile evidenciaFile) {
+        this.evidenciaFile = evidenciaFile;
+    }
+
+    public Reportes() {
+    }
+
+    public Reportes(Long idReportes, String direccion, String descripcion, User user, Contaminante contaminante, Barrios barrio, LocalDate fechaReporte, String evidencia) {
+        this.idReportes = idReportes;
         this.direccion = direccion;
         this.descripcion = descripcion;
         this.user = user;
         this.contaminante = contaminante;
         this.barrio = barrio;
+        this.fechaReporte = fechaReporte;
+        this.evidencia = evidencia;
     }
 
     public Long getIdReportes() {
@@ -82,5 +118,21 @@ public class Reportes {
 
     public void setBarrio(Barrios barrio) {
         this.barrio = barrio;
+    }
+
+    public LocalDate getFechaReporte() {
+        return fechaReporte;
+    }
+
+    public void setFechaReporte(LocalDate fechaReporte) {
+        this.fechaReporte = fechaReporte;
+    }
+
+    public String getEvidencia() {
+        return evidencia;
+    }
+
+    public void setEvidencia(String evidencia) {
+        this.evidencia = evidencia;
     }
 }

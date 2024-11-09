@@ -6,7 +6,11 @@ import com.proyectoAulaBD.repository.ReportesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +23,28 @@ public class ReportesService {
     @Autowired
     private ReportesRepository reportesRepository;
 
-    public Reportes guardar(Reportes reportes) {
+    public Reportes guardar(Reportes reportes, MultipartFile evidencia) {
+        // Establecer la fecha actual
+        reportes.setFechaReporte(LocalDate.now());
+
+        // Manejo de la carga de la imagen
+        if (evidencia != null && !evidencia.isEmpty()) {
+            try {
+                String directorio = "C:\\Users\\esnne\\OneDrive\\Desktop\\imagenes_evidencia"; // Ajusta según tu sistema operativo
+                File carpeta = new File(directorio);
+                if (!carpeta.exists()) {
+                    carpeta.mkdirs(); // Crea la carpeta si no existe
+                }
+
+                String rutaEvidencia = directorio + evidencia.getOriginalFilename();
+                evidencia.transferTo(new File(rutaEvidencia)); // Guardar la imagen
+                reportes.setEvidencia(rutaEvidencia); // Guardar la ruta en el reporte
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
+        }
+
         return reportesRepository.save(reportes);
     }
 

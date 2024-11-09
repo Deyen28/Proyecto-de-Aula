@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -104,20 +104,34 @@ public class UserController {
 
         // Agrega la lista de reportes del usuario
         List<Reportes> reportes = reportesService.obtenerReportesPorUsuario(userId);
+
+        // Formatear la fecha
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<Reportes> reportesFormateados = reportes.stream()
+                .map(reporte -> {
+                    reporte.setFechaReporteFormatted(reporte.getFechaReporte().format(formatter));
+                    return reporte;
+                })
+                .collect(Collectors.toList());
+
+        model.addAttribute("reportes", reportesFormateados);
         model.addAttribute("reportes", reportes);
 
         return "userReportes";
     }
 
     @PostMapping("/Reportar")
-    public String registrarReporte(@ModelAttribute("reporte") Reportes reporte, HttpSession session) {
+    public String registrarReporte(@ModelAttribute("reporte") Reportes reporte,
+                                   HttpSession session) {
         User user = userService.obtenerPorId((Long) session.getAttribute("userId"));
 
-        reporte.setUser(user);
+        reporte.setUser (user);
         reporte.setContaminante(contaminanteService.obtenerPorId(reporte.getContaminante().getIdContaminante()));
         reporte.setBarrio(barriosService.obtenerPorId(reporte.getBarrio().getIdBarrio()));
 
-        reportesService.guardar(reporte);
+        // Manejar la carga del archivo
+        MultipartFile evidencia = reporte.getEvidenciaFile();
+        reportesService.guardar(reporte, evidencia); // Pasar el archivo de evidencia
         return "redirect:/user/dashboard/userReportView";
     }
 

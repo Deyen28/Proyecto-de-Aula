@@ -60,7 +60,7 @@
             <div class="card ">
                 <div class="card-body">
                     <h4 class="mb-3">Realizar reporte</h4>
-                    <form class="needs-validation" novalidate="" th:action="@{/Reportar}" th:object="${reporte}" method="post">
+                    <form class="needs-validation" novalidate="" th:action="@{/Reportar}" th:object="${reporte}" method="post" enctype="multipart/form-data">
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label for="contaminante">Tipo de contaminación</label>
@@ -92,6 +92,12 @@
                             </div>
 
                             <div class="col-12">
+                                <label for="evidencia" class="form-label">Evidencia (sube una imagen):</label>
+                                <input type="file" class="form-control" id="evidencia" th:field="*{evidenciaFile}" accept="image/*">
+                            </div>
+
+
+                            <div class="col-12">
                                 <div class="mb-3">
                                     <label for="descripcion" class="form-label">Describa las causas del reporte: <span class="text-body-secondary">(Opcional)</span></label>
                                     <textarea class="form-control" id="descripcion" rows="3" th:field="*{descripcion}"></textarea>
@@ -117,13 +123,14 @@
                         <div class="card-body">
                             <h3 class="fs-4 mb-3">Reportes</h3>
                             <div class="col">
-                                <table class="table bg-white rounded shadow-sm  table-hover">
+                                <table class="table bg-white rounded shadow-sm table-hover">
                                     <thead>
                                     <tr>
                                         <th scope="col">Dirección</th>
                                         <th scope="col">Descripción</th>
                                         <th scope="col">Contaminante</th>
                                         <th scope="col">Barrio</th>
+                                        <th scope="col">Fecha</th> <!-- Nueva columna para la fecha -->
                                         <th scope="col">Acciones</th>
                                     </tr>
                                     </thead>
@@ -133,6 +140,7 @@
                                         <td th:text="${reporte.descripcion}"></td>
                                         <td th:text="${reporte.contaminante.nombreContaminante}"></td>
                                         <td th:text="${reporte.barrio.nombreBarrio}"></td>
+                                        <td th:text="${reporte.fechaReporteFormatted}"></td>
                                         <td>
                                             <form th:action="@{/user/deleteReport/{id}(id=${reporte.idReportes})}" method="post" style="display:inline;">
                                                 <button class="btn btn-danger btn-sm" type="submit">
