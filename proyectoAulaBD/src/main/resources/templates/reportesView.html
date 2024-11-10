@@ -55,11 +55,17 @@
     <div class="my-3 p-3 bg-body rounded shadow-sm">
       <h6 class="border-bottom pb-2 mb-0">Reportes</h6>
 
+      <!-- Buscador -->
+      <form action="#" th:action="@{/reportes}" method="get">
+        <div class="mb-3">
+          <input type="text" id="searchBar" name="search" class="form-control" placeholder="Buscar por barrio..." value="">
+          <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+        </div>
+      </form>
+
       <!-- Iteración dinámica sobre los reportes -->
-      <div th:each="reporte : ${reportes}" class="d-flex text-body-secondary pt-3">
-        <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32"
-             xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32"
-             preserveAspectRatio="xMidYMid slice" focusable="false">
+      <div th:each="reporte : ${reportes}" class="d-flex text-body-secondary pt-3 report-item">
+        <svg class="bd-placeholder-img flex-shrink-0 me-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false">
           <title>Reporte</title>
           <rect width="100%" height="100%" fill="#007bff"></rect>
         </svg>
@@ -67,19 +73,49 @@
         <p class="pb-3 mb-0 small lh-sm border-bottom">
           <strong class="d-block text-gray-dark" th:text="'@' + ${reporte.user.userName}">@username</strong>
           <span>
-                            <strong class="d-block text-gray-dark">Barrio:</strong>
-                            <span th:text="${reporte.barrio.nombreBarrio}">Nombre del Barrio</span>
-                        </span><br>
+            <strong class="d-block text-gray-dark">Barrio:</strong>
+            <span th:text="${reporte.barrio.nombreBarrio}">Nombre del Barrio</span>
+        </span><br>
           <span>
-                            <strong class="d-block text-gray-dark">Dirección:</strong>
-                            <span th:text="${reporte.direccion}">Dirección</span>
-                        </span><br>
+            <strong class="d-block text-gray-dark">Dirección:</strong>
+            <span th:text="${reporte.direccion}">Dirección</span>
+          </span><br>
           <span>
-                            <strong class="d-block text-gray-dark">Descripción:</strong>
-                            <span th:text="${reporte.descripcion}">Descripción</span>
-                        </span>
+            <strong class="d-block text-gray-dark">Descripción:</strong>
+            <span th:text="${reporte.descripcion}">Descripción</span>
+          </span><br>
+          <span>
+            <strong class="d-block text-gray-dark">Fecha:</strong>
+            <span th:text="${reporte.fechaReporteFormatted}">Fecha</span>
+          </span><br>
+          <span>
+            <strong class="d-block text-gray-dark">Evidencia:</strong>
+            <img th:src="@{'/evidencias/' + ${reporte.evidencia}}"
+                 alt="Evidencia"
+                 style="max-width: 200px; max-height: 200px;"
+                 onerror="this.src='/images/imagen-no-disponible.png'; this.onerror=null;">
+          </span>
         </p>
       </div>
+
+      <!-- Controles de paginación -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/reportes(page=${currentPage - 1})}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link" th:href="@{/reportes(page=${i})}" th:text="${i + 1}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/reportes(page=${currentPage + 1})}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
       <!-- Enlace para ver todos los reportes -->
       <small class="d-block text-end mt-3">
@@ -138,6 +174,22 @@
 
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+  function filterReports() {
+      const input = document.getElementById('searchBar');
+      const filter = input.value.toLowerCase();
+      const reportItems = document.querySelectorAll('.report-item');
+
+      reportItems.forEach(item => {
+          const barrio = item.querySelector('span:nth-child(1)').textContent.toLowerCase();
+          if (barrio.includes(filter)) {
+              item.style.display = ''; // Mostrar el reporte
+          } else {
+              item.style.display = 'none'; // Ocultar el reporte
+          }
+      });
+  }
+</script>
 </body>
 
 <style th:inline="css">

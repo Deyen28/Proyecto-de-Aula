@@ -5,47 +5,68 @@ import com.proyectoAulaBD.model.Reportes;
 import com.proyectoAulaBD.repository.ReportesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ReportesService {
 
+    @Value("${app.upload.dir:${user.home}}")
+    private String uploadDir;
+
     @Autowired
     private ReportesRepository reportesRepository;
 
     public Reportes guardar(Reportes reportes, MultipartFile evidencia) {
-        // Establecer la fecha actual
         reportes.setFechaReporte(LocalDate.now());
 
-        // Manejo de la carga de la imagen
         if (evidencia != null && !evidencia.isEmpty()) {
             try {
-                String directorio = "C:\\Users\\esnne\\OneDrive\\Desktop\\imagenes_evidencia"; // Ajusta según tu sistema operativo
+                // Genera un nombre único para el archivo
+                String fileName = UUID.randomUUID().toString() + "_" + evidencia.getOriginalFilename();
+
+                // Crea el directorio si no existe
+                String directorio = "C:/Users/esnne/OneDrive/Desktop/proyectoAulaBD/src/main/resources/evidencias";
                 File carpeta = new File(directorio);
                 if (!carpeta.exists()) {
-                    carpeta.mkdirs(); // Crea la carpeta si no existe
+                    carpeta.mkdirs();
                 }
 
-                String rutaEvidencia = directorio + evidencia.getOriginalFilename();
-                evidencia.transferTo(new File(rutaEvidencia)); // Guardar la imagen
-                reportes.setEvidencia(rutaEvidencia); // Guardar la ruta en el reporte
-            } catch (IOException e) {
-                e.printStackTrace();
+                // Ruta completa del archivo
+                Path path = Paths.get(directorio + File.separator + fileName);
 
+                // Guarda el archivo
+                Files.copy(evidencia.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guarda el nombre del archivo en la base de datos
+                reportes.setEvidencia(fileName);
+
+            } catch (IOException e) {
+                throw new RuntimeException("No se pudo guardar el archivo: " + e.getMessage());
             }
         }
 
         return reportesRepository.save(reportes);
+    }
+
+    public Page<Reportes> listarTodos(Pageable pageable) {
+        return reportesRepository.findAll(pageable);
+    }
+    public Page<Reportes> buscarReportesPorBarrio(String barrio, Pageable pageable) {
+        return reportesRepository.findByBarrioNombreBarrioContainingIgnoreCase(barrio, pageable);
     }
 
     public List<Reportes> listarTodos() {
